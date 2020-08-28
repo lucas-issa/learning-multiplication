@@ -1,5 +1,6 @@
 import React from 'react';
 import './Multiplication.scss';
+import {WithTranslation, withTranslation} from 'react-i18next';
 
 interface Stats {
     hits: number;
@@ -77,7 +78,7 @@ interface ToComeBackType {
     count: number;
 }
 
-export class Multiplication extends React.Component {
+class MultiplicationComp extends React.Component<WithTranslation> {
 
     state: {
         message: string,
@@ -124,11 +125,9 @@ export class Multiplication extends React.Component {
 
     input: HTMLElement;
 
-    componentWillMount() {
-        this.load();
-    }
-
     componentDidMount() {
+        this.load();
+
         this.randomFactors();
 
         this.timer = setInterval(() => {
@@ -273,18 +272,19 @@ export class Multiplication extends React.Component {
     }
 
     go = () => {
+        const {t} = this.props;
         const {result, resultTry, seconds} = this.state;
         if (result === resultTry) {
             if (seconds >= this.secondsTooLate) {
-                this.emitMessage('Right but slow', 'success-too-late');
+                this.emitMessage(t('Right but slow'), 'success-too-late');
                 this.incrementToComeBack();
                 this.incrementStat('hitsTooLate');
             } else if (seconds >= this.secondsLate) {
-                this.emitMessage('Congratulations! You can be faster!', 'success-late');
+                this.emitMessage(t('Congratulations! You can be faster!'), 'success-late');
                 this.incrementToComeBack();
                 this.incrementStat('hitsLate');
             } else {
-                this.emitMessage('Congratulations!!!', 'success');
+                this.emitMessage(t('Congratulations!!!'), 'success');
                 const {factor1, factor2} = this.state;
                 this.decrementToComeBack(factor1, factor2);
                 this.incrementStat('hits');
@@ -292,7 +292,7 @@ export class Multiplication extends React.Component {
             this.randomFactors();
         } else {
             if (resultTry === '' || resultTry === Number.NaN) {
-                this.emitMessage('Type a number...', 'failure');
+                this.emitMessage(`${t('Type a number')}...`, 'failure');
             } else if (resultTry > 100) {
                 this.emitMessage('Type a number smaller than 100...', 'failure');
             } else if (resultTry < 0) {
@@ -300,7 +300,7 @@ export class Multiplication extends React.Component {
             } else if (Math.round(resultTry as number) !== resultTry) {
                 this.emitMessage('Type a rounded number...', 'failure');
             } else {
-                this.emitMessage('Try again...', 'failure');
+                this.emitMessage(`${t('Try again')}...`, 'failure');
                 this.incrementToComeBack();
                 this.incrementStat('misses');
             }
@@ -428,6 +428,7 @@ export class Multiplication extends React.Component {
     }
 
     render() {
+        const {t} = this.props;
         const {
             message, messageClassName,
             factor1, factor2, resultTry,
@@ -470,19 +471,19 @@ export class Multiplication extends React.Component {
                     </form>
                 </div>
                 <div>
-                    <button className="reset" onClick={this.reset}>Reset</button>
-                    <button className="skips" onClick={this.skip}>Next</button>
-                    <button className="reveals" onClick={this.reveal}>Reveal</button>
+                    <button className="reset" onClick={this.reset}>{t('Reset')}</button>
+                    <button className="skips" onClick={this.skip}>{t('Next')}</button>
+                    <button className="reveals" onClick={this.reveal}>{t('Reveal')}</button>
                 </div>
-                <Stats stats={stats.temp} type="Until reset" />
-                <Stats stats={stats.global} type="Global" />
+                <Stats stats={stats.temp} type={t('Until reset')} />
+                <Stats stats={stats.global} type={t('Global')} />
                 { practiceList.length > 0 &&
                 <div className="practice">
                     <div className="practice-title">
-                        To study ({this.toComeBack.size} items)
+                        {t('To study')} ({this.toComeBack.size} {t('items')})
                     </div>
                     <div className="practice-title no-fast-hit">
-                        Total negative points: {totalRamainingNoFastHit}
+                        {t('Total negative points')}: {totalRamainingNoFastHit}
                     </div>
                     <div className="practice-list">
                         {practiceList.map(i => (
@@ -490,12 +491,12 @@ export class Multiplication extends React.Component {
                                 {i.key} {
                                     this.showPracticeResults &&
                                     <span>= <span className="reveals">{i.result}</span></span>
-                                } <span className="no-fast-hit">(negative points: {i.count})</span>
+                                } <span className="no-fast-hit">({t('negative points')}: {i.count})</span>
                             </div>
                         ))}
                     </div>
                     <div className="operation">
-                        <button className="reveals" onClick={this.revealAll}>Reveal all</button>
+                        <button className="reveals" onClick={this.revealAll}>{t('Reveal all')}</button>
                     </div>
                 </div>
                 }
@@ -503,3 +504,5 @@ export class Multiplication extends React.Component {
         );
     }
 }
+
+export const Multiplication = withTranslation()(MultiplicationComp);
