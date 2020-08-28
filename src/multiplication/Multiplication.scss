@@ -1,0 +1,119 @@
+.factors {
+  text-align: center;
+
+  .message {
+    font-weight: bold;
+    font-size: 0.95rem;
+    height: 22px;
+    margin-bottom: -8px;
+  }
+  .success {
+    font-size: 1.1rem;
+    color: green;
+  }
+  .success-late {
+    color: green;
+    border-bottom: orange 2px solid;
+  }
+  .success-too-late {
+    color: green;
+    border-bottom: red 2px solid;
+  }
+  .failure {
+    color: red;
+  }
+
+  .no-fast-hit {
+    color: gray;
+  }
+
+  .timer {
+    font-size: 0.9rem;
+  }
+
+  .timer-critical {
+    color: red;
+  }
+
+  .timer-warn {
+    color: orange;
+  }
+
+  .timer-ok {
+    color: green;
+  }
+
+  .stats {
+    margin: 8px 0;
+
+    .stats-type {
+      color: gray;
+      font-size: 0.7rem;
+      margin-bottom: 4px;
+    }
+    .stats-item {
+      margin: 0 6px;
+      font-size: 1rem;
+    }
+  }
+
+  .hits {
+    color: green;
+  }
+  .hits-late {
+    color: green;
+    border-bottom: orange 2px solid;
+  }
+  .hits-too-late {
+    color: green;
+    border-bottom: red 2px solid;
+  }
+  .misses {
+    color: red;
+  }
+  .skips {
+    color: orange;
+  }
+  .reveals {
+    color: blue;
+  }
+
+  .operation {
+    font-size: 1.5rem;
+    margin: 16px 0;
+
+    input {
+      font-size: 1.5rem;
+      width: 36px;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  }
+  button {
+    font-size: 1.1rem;
+    margin: 6px;
+    padding: 5px 12px;
+    position: relative;
+    top: -2px;
+  }
+
+  .practice {
+    color: #383838;
+    margin-top: 20px;
+
+    .practice-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .practice-list {
+    }
+  }
+}
