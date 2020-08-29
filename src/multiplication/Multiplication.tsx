@@ -1,75 +1,7 @@
 import React from 'react';
 import './Multiplication.scss';
 import {WithTranslation, withTranslation} from 'react-i18next';
-
-interface Stats {
-    hits: number;
-    hitsLate: number;
-    hitsTooLate: number;
-    misses: number;
-    skips: number;
-    reveals: number;
-}
-
-interface StatsProps {
-    stats: Stats,
-    type: string,
-}
-
-const Stats = (props: StatsProps) => {
-    const {stats, type} = props;
-    const {
-        hits, hitsLate, hitsTooLate, misses, skips, reveals,
-    } = stats;
-    return (
-        <div className="stats">
-            <div className="stats-type">
-                {type}
-            </div>
-            <div>
-              <span className="hits stats-item">
-                  {hits}
-              </span>
-                {hitsLate > 0 &&
-                <span className="hits-late stats-item">
-                        {hitsLate}
-                    </span>
-                }
-                {hitsTooLate > 0 &&
-                <span className="hits-too-late stats-item">
-                        {hitsTooLate}
-                    </span>
-                }
-                {skips > 0 &&
-                <span className="skips stats-item">
-                        {skips}
-                    </span>
-                }
-                {reveals > 0 &&
-                <span className="reveals stats-item">
-                        {reveals}
-                    </span>
-                }
-                {misses > 0 &&
-                <span className="misses stats-item">
-                        {misses}
-                    </span>
-                }
-            </div>
-        </div>
-    );
-};
-
-function initStats(): Stats {
-    return {
-        hits: 0,
-        hitsLate: 0,
-        hitsTooLate: 0,
-        misses: 0,
-        skips: 0,
-        reveals: 0,
-    };
-}
+import {initStatsInfo, StatsInfo, Stats} from './Stats';
 
 interface ToComeBackType {
     factor1: number;
@@ -78,7 +10,7 @@ interface ToComeBackType {
     count: number;
 }
 
-class MultiplicationComp extends React.Component<WithTranslation> {
+class MultiplicationComponent extends React.Component<WithTranslation> {
 
     state: {
         message: string,
@@ -90,8 +22,8 @@ class MultiplicationComp extends React.Component<WithTranslation> {
         resultTry: string | number,
 
         stats: {
-            temp: Stats,
-            global: Stats,
+            temp: StatsInfo,
+            global: StatsInfo,
         },
 
         seconds: number,
@@ -105,8 +37,8 @@ class MultiplicationComp extends React.Component<WithTranslation> {
         resultTry: '',
 
         stats: {
-            temp: initStats(),
-            global: initStats(),
+            temp: initStatsInfo(),
+            global: initStatsInfo(),
         },
 
         seconds: 0,
@@ -176,8 +108,8 @@ class MultiplicationComp extends React.Component<WithTranslation> {
 
     getTimeToShowMessage(message: string | number) {
         if (typeof message === 'number') {
-           const time = 3000;
-            console.log('number', time);
+            const time = 3000;
+            // console.log('number', time);
             return time;
         } else {
             const wordsCount = message.split(' ').length;
@@ -330,7 +262,7 @@ class MultiplicationComp extends React.Component<WithTranslation> {
         this.randomFactors();
         this.setState({
             stats: {
-                temp: initStats(),
+                temp: initStatsInfo(),
                 global: this.state.stats.global,
             },
         }, this.save)
@@ -505,4 +437,4 @@ class MultiplicationComp extends React.Component<WithTranslation> {
     }
 }
 
-export const Multiplication = withTranslation()(MultiplicationComp);
+export const Multiplication = withTranslation()(MultiplicationComponent);
