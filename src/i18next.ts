@@ -31,7 +31,7 @@ i18n
             'pt-BR': {
                 translation: {
                     "App title": "Aprendendo multiplicação",
-                    "Go": "Go",
+                    "Go": "Ir",
                     "Reset": "Limpar",
                     "Next": "Próximo",
                     "Reveal": "Revelar",

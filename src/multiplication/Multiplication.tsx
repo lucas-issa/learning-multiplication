@@ -463,7 +463,7 @@ class MultiplicationComp extends React.Component<WithTranslation> {
                                 onChange={this.onChange}
                                 ref={(input) => { this.input = input; }}
                             />
-                            <button type="submit" className="hits">Go</button>
+                            <button type="submit" className="hits">{t('Go')}</button>
                         </div>
                         <div className={`timer ${this.getTimerClass(seconds)}`}>
                             {seconds}s
