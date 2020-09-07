@@ -15,6 +15,34 @@
     align-items: center;
     justify-content: center;
     color: white;
+
+    .title {
+        padding: 0 26px;
+    }
+
+    .github-link {
+        position: absolute;
+        right: 8px;
+
+        a {
+            color: white;
+
+            &:hover {
+                color: hsla(0,0%,100%,.7);
+                text-decoration: none;
+            }
+
+            .v-align-middle {
+                vertical-align: middle !important;
+            }
+            .octicon {
+                display: inline-block;
+                fill: currentColor;
+                height: 22px;
+                width: 22px;
+            }
+        }
+    }
 }
 
 .change-language {
