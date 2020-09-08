@@ -7,6 +7,7 @@ export interface StatsInfo {
     misses: number;
     skips: number;
     reveals: number;
+    speed: number; // operations / minute
 }
 
 export function initStatsInfo(): StatsInfo {
@@ -17,6 +18,7 @@ export function initStatsInfo(): StatsInfo {
         misses: 0,
         skips: 0,
         reveals: 0,
+        speed: 0,
     };
 }
 
@@ -28,7 +30,7 @@ interface StatsProps {
 const StatsComponent = (props: StatsProps) => {
     const {stats, type} = props;
     const {
-        hits, hitsLate, hitsTooLate, misses, skips, reveals,
+        hits, hitsLate, hitsTooLate, misses, skips, reveals, speed
     } = stats;
     return (
         <div className="stats">
@@ -62,6 +64,11 @@ const StatsComponent = (props: StatsProps) => {
                 {misses > 0 &&
                 <span className="misses stats-item">
                         {misses}
+                    </span>
+                }
+                {speed > 0 &&
+                <span className="speed stats-item">
+                    <small>{speed.toFixed(0)}<small>/min.</small></small>
                     </span>
                 }
             </div>

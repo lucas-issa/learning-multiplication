@@ -210,16 +210,16 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
             if (seconds >= this.secondsTooLate) {
                 this.emitMessage(t('Right but slow'), 'success-too-late');
                 this.incrementToComeBack();
-                this.incrementStat('hitsTooLate');
+                this.incrementStat('hitsTooLate', true);
             } else if (seconds >= this.secondsLate) {
                 this.emitMessage(t('Congratulations! You can be faster!'), 'success-late');
                 this.incrementToComeBack();
-                this.incrementStat('hitsLate');
+                this.incrementStat('hitsLate', true);
             } else {
                 this.emitMessage(t('Congratulations!!!'), 'success');
                 const {factor1, factor2} = this.state;
                 this.decrementToComeBack(factor1, factor2);
-                this.incrementStat('hits');
+                this.incrementStat('hits', true);
             }
             this.randomFactors();
         } else {
@@ -240,11 +240,28 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
         }
     }
 
-    incrementStat(type: string) {
+    calculeteNewSpeedAverage(stat: StatsInfo, seconds: number) {
+        const totalHits = stat.hits + stat.hitsLate + stat.hitsTooLate;
+        const {speed} = stat;
+        let newSpeed = seconds === 0 ? 90.0 : 60.0 / seconds;
+        if (!speed || totalHits === 1) {
+            return newSpeed;
+        } else {
+            return ((stat.speed / totalHits) * (totalHits - 1)) + (newSpeed / totalHits);
+        }
+    }
+
+    incrementStat(type: string, shouldRecalculeteSpeed = false) {
         const temp = {...this.state.stats.temp};
         const global = {...this.state.stats.global};
         temp[type] = temp[type] + 1;
         global[type] = global[type] + 1;
+        if (shouldRecalculeteSpeed) {
+            const speedKey = 'speed';
+            const {seconds} = this.state;
+            temp[speedKey] = this.calculeteNewSpeedAverage(temp, seconds);
+            global[speedKey] = this.calculeteNewSpeedAverage(global, seconds);
+        }
         this.setState({
             stats: {
                 temp: temp,
