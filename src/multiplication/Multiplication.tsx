@@ -1,8 +1,12 @@
 import React from 'react';
 import compose from 'lodash/flowRight';
-import './Multiplication.scss';
+import {DateTimeFormatter, Duration, ZonedDateTime} from '@js-joda/core';
 import {WithTranslation, withTranslation} from 'react-i18next';
+import './Multiplication.scss';
 import {initStatsInfo, StatsInfo, Stats} from './Stats';
+
+
+const minutesClosedToResetTimer = 1;
 
 interface ToComeBackType {
     factor1: number;
@@ -118,18 +122,29 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
 
         window.addEventListener('unload', () => {
             localStorage.setItem(lastStateKey, JSON.stringify({
-                seconds: this.state.seconds,
                 factor1: this.state.factor1,
                 factor2: this.state.factor2,
                 result: this.state.result,
+                seconds: this.state.seconds,
+                lastExit: ZonedDateTime.now().format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
             }));
         });
 
         const lastState = JSON.parse(localStorage.getItem(lastStateKey));
 
         if (lastState && lastState.seconds) {
+            let seconds = lastState.seconds + 1;
+            let lastExit: ZonedDateTime;
+            if (lastState.lastExit) {
+                lastExit = ZonedDateTime.parse(lastState.lastExit, DateTimeFormatter.ISO_ZONED_DATE_TIME);
+                const durationSinceLastAccess = Duration.between(lastExit, ZonedDateTime.now());
+                if (durationSinceLastAccess.toMinutes() > minutesClosedToResetTimer) {
+                    // If closed for some time, reset timer.
+                    seconds = 0;
+                }
+            }
             this.setState({
-                seconds: lastState.seconds + 1,
+                seconds,
             });
         }
 
