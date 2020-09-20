@@ -6,7 +6,7 @@ import './Multiplication.scss';
 import {initStatsInfo, StatsInfo, Stats} from './Stats';
 
 
-const minutesClosedToResetTimer = 1;
+const minutesClosedToResetTimer = 15;
 
 interface ToComeBackType {
     factor1: number;
@@ -138,7 +138,7 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
             if (lastState.lastExit) {
                 lastExit = ZonedDateTime.parse(lastState.lastExit, DateTimeFormatter.ISO_ZONED_DATE_TIME);
                 const durationSinceLastAccess = Duration.between(lastExit, ZonedDateTime.now());
-                if (durationSinceLastAccess.toMinutes() > minutesClosedToResetTimer) {
+                if (durationSinceLastAccess.toMinutes() >= minutesClosedToResetTimer) {
                     // If closed for some time, reset timer.
                     seconds = 0;
                 }
