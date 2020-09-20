@@ -1,4 +1,5 @@
 import React from 'react';
+import compose from 'lodash/flowRight';
 import './Multiplication.scss';
 import {WithTranslation, withTranslation} from 'react-i18next';
 import {initStatsInfo, StatsInfo, Stats} from './Stats';
@@ -49,22 +50,26 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
     secondsLate = 10;
     secondsTooLate = 18;
 
+    /**
+     * Operations that need more training and therefore will appear more frequently.
+     */
     toComeBack: Map<string, ToComeBackType> = new Map();
 
     comeBackControl = {
         count: 0,
     };
 
+    lastWrong: string;
+
     input: HTMLElement;
 
     componentDidMount() {
-        this.load();
-
-        this.randomFactors();
-
-        this.timer = setInterval(() => {
-            this.setState({ seconds: this.state.seconds + 1 });
-        }, 1000);
+        this.loadStats();
+        this.loadOperation();
+        if (this.isWindowVisible()) {
+            this.startTimer();
+        }
+        this.stopTimerOnHide();
 
         setTimeout(() => {
             this.input.focus();
@@ -72,16 +77,77 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
     }
 
     componentWillUnmount() {
-        clearInterval(this.timer);
+        this.stopTimer();
     }
 
-    generateToComeBack = (factor1: number, factor2: number) => {
+    generateToComeBackKey = (factor1: number, factor2: number) => {
         return `${factor1}x${factor2}`;
     }
 
-    incrementToComeBack = () => {
+    startTimer = () => {
+        if (!this.timer) {
+            this.timer = setInterval(() => {
+                this.setState({ seconds: this.state.seconds + 1 });
+            }, 1000);
+        }
+    };
+
+    stopTimer = () => {
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = undefined;
+        }
+    };
+
+    isWindowVisible = () => {
+        return document.visibilityState === 'visible';
+    };
+
+    stopTimerOnHide = () => {
+        document.addEventListener("visibilitychange", () => {
+            if (this.isWindowVisible()) {
+                this.startTimer();
+            } else {
+                this.stopTimer();
+            }
+        });
+    };
+
+    loadOperation = () => {
+        const lastStateKey = 'lastState';
+
+        window.addEventListener('unload', () => {
+            localStorage.setItem(lastStateKey, JSON.stringify({
+                seconds: this.state.seconds,
+                factor1: this.state.factor1,
+                factor2: this.state.factor2,
+                result: this.state.result,
+            }));
+        });
+
+        const lastState = JSON.parse(localStorage.getItem(lastStateKey));
+
+        if (lastState && lastState.seconds) {
+            this.setState({
+                seconds: lastState.seconds + 1,
+            });
+        }
+
+        if (lastState && lastState.factor1 && lastState.factor2 && lastState.result) {
+            this.setState({
+                factor1: lastState.factor1,
+                factor2: lastState.factor2,
+                result: lastState.result,
+            });
+            this.focus();
+        } else {
+            this.randomFactors();
+        }
+    };
+
+    incrementToComeBack = (wrongAnswer = false) => {
         const {factor1, factor2, result} = this.state;
-        const key = this.generateToComeBack(factor1, factor2);
+        const key = this.generateToComeBackKey(factor1, factor2);
         let item = this.toComeBack.get(key);
         if (!item) {
             item = {
@@ -93,15 +159,23 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
             this.toComeBack.set(key, item);
         }
         item.count++;
+
+        if (wrongAnswer) {
+            this.lastWrong = key;
+        }
     };
 
     decrementToComeBack = (factor1: number, factor2: number) => {
-        const key = this.generateToComeBack(factor1, factor2);
-        const item = this.toComeBack.get(key);
-        if (item) {
-            item.count--;
-            if (item.count <= 0) {
-                this.toComeBack.delete(key);
+        const key = this.generateToComeBackKey(factor1, factor2);
+
+        // If you just made a mistake, don't decrease it now.
+        if (key !== this.lastWrong) {
+            const item = this.toComeBack.get(key);
+            if (item) {
+                item.count--;
+                if (item.count <= 0) {
+                    this.toComeBack.delete(key);
+                }
             }
         }
     };
@@ -134,6 +208,15 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
 
     randomFactor = () => {
         return Math.round(Math.random() * 10);
+    }
+
+    randomBothFactors = () => {
+        const factor1 = Math.round(Math.random() * 10);
+        const factor2 = Math.round(Math.random() * 10);
+        if (factor1 === this.state.factor1 && factor2 === this.state.factor2) {
+            return this.randomBothFactors();
+        }
+        return {factor1, factor2};
     }
 
     decideComeBack = () => {
@@ -175,13 +258,21 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
             // console.log('useComeBack', i, toComeBackList);
             console.log(`useComeBack, i: ${i}`);
             const comeBackItem = toComeBackList[i];
-            factor1 = comeBackItem.factor1;
-            factor2 = comeBackItem.factor2;
-            result = comeBackItem.result;
-            console.log('useComeBack', this.generateToComeBack(factor1, factor2));
-        } else {
-            factor1 = this.randomFactor();
-            factor2 = this.randomFactor();
+            if (this.state.factor1 === comeBackItem.factor1 && this.state.factor2 === comeBackItem.factor2) {
+                // Do not repeat immediately.
+                useComeBack = false;
+            } else {
+                factor1 = comeBackItem.factor1;
+                factor2 = comeBackItem.factor2;
+                result = comeBackItem.result;
+                // console.log('useComeBack', this.generateToComeBackKey(factor1, factor2));
+            }
+        }
+
+        if (!useComeBack) {
+            const newFactors = this.randomBothFactors();
+            factor1 = newFactors.factor1;
+            factor2 = newFactors.factor2;
             result = factor1 * factor2;
         }
 
@@ -222,6 +313,9 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
                 this.incrementStat('hits', true);
             }
             this.randomFactors();
+            if (this.lastWrong) {
+                this.lastWrong = undefined;
+            }
         } else {
             if (resultTry === '' || resultTry === Number.NaN) {
                 this.emitMessage(`${t('Type a number')}...`, 'failure');
@@ -233,7 +327,7 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
                 this.emitMessage('Type a rounded number...', 'failure');
             } else {
                 this.emitMessage(`${t('Try again')}...`, 'failure');
-                this.incrementToComeBack();
+                this.incrementToComeBack(true);
                 this.incrementStat('misses');
             }
             this.focus();
@@ -298,7 +392,7 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
         this.incrementStat('skips');
     }
 
-    load = () => {
+    loadStats = () => {
         // localStorage.setItem('stats', null);
         // localStorage.setItem('toComeBack', null);
         const stats = JSON.parse(localStorage.getItem('stats'));
@@ -454,4 +548,6 @@ class MultiplicationComponent extends React.Component<WithTranslation> {
     }
 }
 
-export const Multiplication = withTranslation()(MultiplicationComponent);
+export const Multiplication = compose(
+    withTranslation(),
+)(MultiplicationComponent);
