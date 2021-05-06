@@ -173,7 +173,10 @@
         }
 
         sendOrder(order) {
-            this._interService.sendOrder(this.getRef(), order);
+            const clickRef = this.getRef();
+            if (clickRef) {
+                this._interService.sendOrder(clickRef, order);
+            }
         }
 
         // sendOrderTryError(error) {
