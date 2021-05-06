@@ -10,11 +10,12 @@
         _addr = interEndPointAddr;
         _headers;
 
-        constructor(affiliateId, domain) {
+        constructor(affiliateId, cookieDomain) {
             this._headers = {
                 'Content-Type': 'application/json',
                 'x-affiliate-id': affiliateId,
-                'x-affiliate-domain': domain,
+                'x-affiliate-domain': document.location.hostname,
+                'x-affiliate-cookie-domain': cookieDomain,
             };
         }
 
