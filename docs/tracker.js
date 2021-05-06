@@ -173,7 +173,7 @@
         }
 
         sendOrder(order) {
-            this._interService.sendOrder(order);
+            this._interService.sendOrder(this.getRef(), order);
         }
 
         // sendOrderTryError(error) {
