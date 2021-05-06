@@ -51,7 +51,7 @@
     }
 
     class Cookie {
-        _configForLocahostDev;
+        _configForLocalhostDev;
 
         set(key, value, domain, maxAge) {
             let cookieString =
@@ -60,7 +60,7 @@
                 ';domain=' + domain +
                 ';max-age=' + maxAge;
 
-            if (!this._configForLocahostDev) {
+            if (!this._configForLocalhostDev) {
                 cookieString +=
                     ';secure';
             }
@@ -70,8 +70,8 @@
             document.cookie = cookieString;
         }
 
-        configForLocahostDev() {
-            this._configForLocahostDev = true;
+        configForLocalhostDev() {
+            this._configForLocalhostDev = true;
         }
     }
 
@@ -86,8 +86,8 @@
             this._cookieDomain = cookieDomain;
         }
 
-        configForLocahostDev() {
-            this._cookie.configForLocahostDev();
+        configForLocalhostDev() {
+            this._cookie.configForLocalhostDev();
         }
 
         set(clickRef) {
@@ -138,14 +138,14 @@
         _interService = new InterService();
         _refNumber;
         _storage;
-        _configForLocahostDev;
+        _configForLocalhostDev;
 
         init(affiliateId, cookieDomain) {
             if (!cookieDomain) {
                 cookieDomain = document.location.hostname;
             }
             this._storage = new Storage(cookieDomain);
-            this._storage.configForLocahostDev();
+            this._storage.configForLocalhostDev();
             this._interService = new InterService(affiliateId, cookieDomain);
 
             let queryStringParser = new QueryStringParser(document.location.search);
@@ -161,8 +161,8 @@
             }
         }
 
-        configForLocahostDev() {
-            this._configForLocahostDev = true;
+        configForLocalhostDev() {
+            this._configForLocalhostDev = true;
         }
 
         getRef() {
