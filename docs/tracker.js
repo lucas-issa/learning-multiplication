@@ -172,7 +172,7 @@
             return this._refNumber;
         }
 
-        sendOrder(order) {
+        registerOrder(order) {
             const clickRef = this.getRef();
             if (clickRef) {
                 this._interService.sendOrder(clickRef, order);
