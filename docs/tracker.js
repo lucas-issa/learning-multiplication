@@ -69,7 +69,7 @@
         }
 
         configForLocahostDev() {
-            this._configForLocahostDev;
+            this._configForLocahostDev = true;
         }
     }
 
