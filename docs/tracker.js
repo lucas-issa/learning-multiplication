@@ -3,8 +3,8 @@
     const cookieName = 'interClickRef';
     const cookieMaxAgeSeconds = 60 * 60 * 24 * 7;
 
+    const clickRefQueryParamName = 'interClickRef';
     const interEndPointAddr = 'https://teste/orders';
-    const clickRefQueryParamName = 'clickRef';
 
     class InterService {
         _addr = interEndPointAddr;
@@ -13,8 +13,8 @@
         constructor(affiliateId, domain) {
             this._headers = {
                 'Content-Type': 'application/json',
-                'X-AFFILIATE-ID': affiliateId,
-                'X-AFFILIATE-DOMAIN': domain,
+                'x-affiliate-id': affiliateId,
+                'X-affiliate-domain': domain,
             };
         }
 
@@ -49,14 +49,27 @@
     }
 
     class Cookie {
+        _configForLocahostDev;
+
         set(key, value, domain, maxAge) {
-            document.cookie =
+            let cookieString =
                 key + '=' + value +
                 ';path=/' +
                 ';domain=' + domain +
-                ';max-age=' + maxAge +
-                ';secure' +
+                ';max-age=' + maxAge;
+
+            if (!this._configForLocahostDev) {
+                cookieString +=
+                    ';secure';
+            }
+            cookieString +=
                 ';samesite=strict';
+
+            document.cookie = cookieString;
+        }
+
+        configForLocahostDev() {
+            this._configForLocahostDev;
         }
     }
 
@@ -69,6 +82,10 @@
 
         constructor(cookieDomain) {
             this._cookieDomain = cookieDomain;
+        }
+
+        configForLocahostDev() {
+            this._cookie.configForLocahostDev();
         }
 
         set(clickRef) {
@@ -119,12 +136,14 @@
         _interService = new InterService();
         _refNumber;
         _storage;
+        _configForLocahostDev;
 
         init(affiliateId, cookieDomain) {
             if (!cookieDomain) {
                 cookieDomain = document.location.hostname;
             }
             this._storage = new Storage(cookieDomain);
+            this._storage.configForLocahostDev();
             this._interService = new InterService(affiliateId, cookieDomain);
 
             let queryStringParser = new QueryStringParser(document.location.search);
@@ -138,6 +157,10 @@
                     this._refNumber = clickRef;
                 }
             }
+        }
+
+        configForLocahostDev() {
+            this._configForLocahostDev = true;
         }
 
         getRef() {
