@@ -70,8 +70,8 @@
             document.cookie = cookieString;
         }
 
-        configForLocalhostDev() {
-            this._configForLocalhostDev = true;
+        setConfigForLocalhostDev(value) {
+            this._configForLocalhostDev = value;
         }
     }
 
@@ -86,8 +86,8 @@
             this._cookieDomain = cookieDomain;
         }
 
-        configForLocalhostDev() {
-            this._cookie.configForLocalhostDev();
+        setConfigForLocalhostDev(value) {
+            this._cookie.setConfigForLocalhostDev(value);
         }
 
         set(clickRef) {
@@ -145,7 +145,7 @@
                 cookieDomain = document.location.hostname;
             }
             this._storage = new Storage(cookieDomain);
-            this._storage.configForLocalhostDev();
+            this._storage.setConfigForLocalhostDev(this._configForLocalhostDev);
             this._interService = new InterService(affiliateId, cookieDomain);
 
             let queryStringParser = new QueryStringParser(document.location.search);
@@ -163,6 +163,9 @@
 
         configForLocalhostDev() {
             this._configForLocalhostDev = true;
+            if (this._storage) {
+                this._storage.setConfigForLocalhostDev(this._configForLocalhostDev);
+            }
         }
 
         getRef() {
