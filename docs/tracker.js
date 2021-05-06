@@ -28,6 +28,7 @@
             }
             fetch(this._addr, {
                 method: 'POST',
+                mode: 'cors',
                 headers: this._headers,
                 body: JSON.stringify({ clickRef, order }),
             }).catch(() => {
