@@ -51,7 +51,7 @@
     }
 
     class Cookie {
-        _configForLocalhostDev;
+        _configNoHttps;
 
         set(key, value, domain, maxAge) {
             let cookieString =
@@ -60,7 +60,7 @@
                 ';domain=' + domain +
                 ';max-age=' + maxAge;
 
-            if (!this._configForLocalhostDev) {
+            if (!this._configNoHttps) {
                 cookieString +=
                     ';secure';
             }
@@ -70,8 +70,8 @@
             document.cookie = cookieString;
         }
 
-        setConfigForLocalhostDev(value) {
-            this._configForLocalhostDev = value;
+        setConfigNoHttps(value) {
+            this._configNoHttps = value;
         }
     }
 
@@ -86,8 +86,8 @@
             this._cookieDomain = cookieDomain;
         }
 
-        setConfigForLocalhostDev(value) {
-            this._cookie.setConfigForLocalhostDev(value);
+        setConfigNoHttps(value) {
+            this._cookie.setConfigNoHttps(value);
         }
 
         set(clickRef) {
@@ -138,14 +138,14 @@
         _interService = new InterService();
         _refNumber;
         _storage;
-        _configForLocalhostDev;
+        _configNoHttps;
 
         init(affiliateId, cookieDomain) {
             if (!cookieDomain) {
                 cookieDomain = document.location.hostname;
             }
             this._storage = new Storage(cookieDomain);
-            this._storage.setConfigForLocalhostDev(this._configForLocalhostDev);
+            this._storage.setConfigNoHttps(this._configNoHttps);
             this._interService = new InterService(affiliateId, cookieDomain);
 
             let queryStringParser = new QueryStringParser(document.location.search);
@@ -161,10 +161,10 @@
             }
         }
 
-        configForLocalhostDev() {
-            this._configForLocalhostDev = true;
+        configNoHttps() {
+            this._configNoHttps = true;
             if (this._storage) {
-                this._storage.setConfigForLocalhostDev(this._configForLocalhostDev);
+                this._storage.setConfigNoHttps(this._configNoHttps);
             }
         }
 
