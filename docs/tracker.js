@@ -1,7 +1,7 @@
 (function () {
 
     const cookieName = 'interClickRef';
-    const cookieMaxAgeSeconds = 60 * 60 * 24 * 7;
+    const cookieMaxAgeSeconds = 60 * 60 * 24 * 1;
 
     const clickRefQueryParamName = 'interClickRef';
     const interEndPointAddr = 'https://teste/orders';
