@@ -103,7 +103,7 @@
             if (localStorageValueStr) {
                 let localStorageValue = JSON.parse(localStorageValueStr);
                 if (localStorageValue && localStorageValue.timestamp) {
-                    if (localStorageValue.timestamp <= Date.now()) {
+                    if (localStorageValue.timestamp >= Date.now()) {
                         return localStorageValue.clickRef;
                     }
                 }
