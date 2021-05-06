@@ -14,7 +14,7 @@
             this._headers = {
                 'Content-Type': 'application/json',
                 'x-affiliate-id': affiliateId,
-                'X-affiliate-domain': domain,
+                'x-affiliate-domain': domain,
             };
         }
 
